@@ -1,4 +1,4 @@
-# front_app
+# frontend
 
 ## Project setup
 ```

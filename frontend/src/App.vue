@@ -1,42 +1,46 @@
 <!-- frontend/src/App.vue -->
 <template>
-  <div class="app-container">
-    <nav class="sidebar">
-      <div class="logo">
-        <h1>MyFinance</h1>
-      </div>
-      <div class="menu">
-        <router-link to="/" class="menu-item">
-          <i class="pi pi-home"></i>
-          <span>Dashboard</span>
-        </router-link>
-        <router-link to="/extratos" class="menu-item">
-          <i class="pi pi-list"></i>
-          <span>Extratos</span>
-        </router-link>
-      </div>
-      <div class="actions">
-        <Button @click="showAddReceita" class="p-button-success" icon="pi pi-plus">
-          Receita
-        </Button>
-        <Button @click="showAddDespesa" class="p-button-danger" icon="pi pi-minus">
-          Despesa
-        </Button>
-      </div>
-    </nav>
+  <div id="app">
+    <Toast position="top-right" />
+    <ConfirmDialog />
+    <div class="app-container">
+      <nav class="sidebar">
+        <div class="logo">
+          <h1>MyFinance</h1>
+        </div>
+        <div class="menu">
+          <router-link to="/" class="menu-item">
+            <i class="pi pi-home"></i>
+            <span>Dashboard</span>
+          </router-link>
+          <router-link to="/extratos" class="menu-item">
+            <i class="pi pi-list"></i>
+            <span>Extratos</span>
+          </router-link>
+        </div>
+        <div class="actions">
+          <Button @click="showAddReceita" class="p-button-success" icon="pi pi-plus">
+            Receita
+          </Button>
+          <Button @click="showAddDespesa" class="p-button-danger" icon="pi pi-minus">
+            Despesa
+          </Button>
+        </div>
+      </nav>
 
-    <main class="main-content">
-      <router-view></router-view>
-    </main>
+      <main class="main-content">
+        <router-view></router-view>
+      </main>
 
-    <!-- Modais -->
-    <Dialog v-model:visible="receitaModal" header="Nova Receita">
-      <FormReceita @save="salvarReceita" @cancel="receitaModal = false" />
-    </Dialog>
+      <!-- Modais -->
+      <Dialog v-model:visible="receitaModal" header="Nova Receita">
+        <FormReceita @save="salvarReceita" @cancel="receitaModal = false" />
+      </Dialog>
 
-    <Dialog v-model:visible="despesaModal" header="Nova Despesa">
-      <FormDespesa @save="salvarDespesa" @cancel="despesaModal = false" />
-    </Dialog>
+      <Dialog v-model:visible="despesaModal" header="Nova Despesa">
+        <FormDespesa @save="salvarDespesa" @cancel="despesaModal = false" />
+      </Dialog>
+    </div>
   </div>
 </template>
 
