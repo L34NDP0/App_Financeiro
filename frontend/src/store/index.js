@@ -1,8 +1,8 @@
-// frontend/src/store/index.js
-import { createStore } from 'vuex'
-import axios from 'axios'
+/* eslint-disable */
+import { createStore } from 'vuex';
+import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api'
+const API_URL = 'http://localhost:5000/api';
 
 export default createStore({
     state: {
@@ -15,70 +15,60 @@ export default createStore({
 
     mutations: {
         SET_RECEITAS(state, receitas) {
-            state.receitas = receitas
+            state.receitas = receitas;
         },
         SET_DESPESAS(state, despesas) {
-            state.despesas = despesas
+            state.despesas = despesas;
         },
         SET_CATEGORIAS_RECEITAS(state, categorias) {
-            state.categoriasReceitas = categorias
+            state.categoriasReceitas = categorias;
         },
         SET_CATEGORIAS_DESPESAS(state, categorias) {
-            state.categoriasDespesas = categorias
+            state.categoriasDespesas = categorias;
         },
         SET_RESUMO_DASHBOARD(state, resumo) {
-            state.resumoDashboard = resumo
+            state.resumoDashboard = resumo;
         }
     },
 
     actions: {
-        async fetchReceitas({ commit }) {
+        async fetchData({ commit }, { mutation, endpoint }) {
             try {
-                const response = await axios.get(`${API_URL}/receitas`)
-                commit('SET_RECEITAS', response.data)
+                const response = await axios.get(`${API_URL}${endpoint}`);
+                commit(mutation, response.data);
             } catch (error) {
-                console.error('Erro ao buscar receitas:', error)
+                console.error(`Erro ao buscar ${endpoint}:`, error.response?.data || error.message);
             }
         },
 
-        async fetchDespesas({ commit }) {
+        fetchReceitas({ dispatch }) {
+            return dispatch('fetchData', { mutation: 'SET_RECEITAS', endpoint: '/receitas' });
+        },
+
+        fetchDespesas({ dispatch }) {
+            return dispatch('fetchData', { mutation: 'SET_DESPESAS', endpoint: '/despesas' });
+        },
+
+        fetchResumoDashboard({ dispatch }) {
+            return dispatch('fetchData', { mutation: 'SET_RESUMO_DASHBOARD', endpoint: '/dashboard/resumo' });
+        },
+
+        async adicionarItem({ dispatch }, { endpoint, data, fetchActions }) {
             try {
-                const response = await axios.get(`${API_URL}/despesas`)
-                commit('SET_DESPESAS', response.data)
+                await axios.post(`${API_URL}${endpoint}`, data);
+                fetchActions.forEach(action => dispatch(action));
             } catch (error) {
-                console.error('Erro ao buscar despesas:', error)
+                console.error(`Erro ao adicionar em ${endpoint}:`, error.response?.data || error.message);
+                throw error;
             }
         },
 
-        async fetchResumoDashboard({ commit }) {
-            try {
-                const response = await axios.get(`${API_URL}/dashboard/resumo`)
-                commit('SET_RESUMO_DASHBOARD', response.data)
-            } catch (error) {
-                console.error('Erro ao buscar resumo:', error)
-            }
+        adicionarReceita({ dispatch }, receita) {
+            return dispatch('adicionarItem', { endpoint: '/receitas', data: receita, fetchActions: ['fetchReceitas', 'fetchResumoDashboard'] });
         },
 
-        async adicionarReceita({ dispatch }, receita) {
-            try {
-                await axios.post(`${API_URL}/receitas`, receita)
-                dispatch('fetchReceitas')
-                dispatch('fetchResumoDashboard')
-            } catch (error) {
-                console.error('Erro ao adicionar receita:', error)
-                throw error
-            }
-        },
-
-        async adicionarDespesa({ dispatch }, despesa) {
-            try {
-                await axios.post(`${API_URL}/despesas`, despesa)
-                dispatch('fetchDespesas')
-                dispatch('fetchResumoDashboard')
-            } catch (error) {
-                console.error('Erro ao adicionar despesa:', error)
-                throw error
-            }
+        adicionarDespesa({ dispatch }, despesa) {
+            return dispatch('adicionarItem', { endpoint: '/despesas', data: despesa, fetchActions: ['fetchDespesas', 'fetchResumoDashboard'] });
         }
     }
-})
+});
