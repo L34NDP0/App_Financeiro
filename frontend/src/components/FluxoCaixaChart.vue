@@ -1,6 +1,7 @@
 <template>
     <div class="chart-container">
-        <Line :data="chartData" :options="chartOptions" />
+        <Bar v-if="chartReady" :data="chartData" :options="chartOptions" />
+        <div v-else>Carregando...</div>
     </div>
 </template>
 
@@ -11,53 +12,53 @@ import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
-    PointElement,
-    LineElement,
+    BarElement,
     Title,
     Tooltip,
-    Legend,
-    Filler  // Adicione o import do Filler
+    Legend
 } from 'chart.js'
-import { Line } from 'vue-chartjs'
+import { Bar } from 'vue-chartjs'
 
-// Registre todos os plugins necessários
 ChartJS.register(
     CategoryScale,
     LinearScale,
-    PointElement,
-    LineElement,
+    BarElement,
     Title,
     Tooltip,
-    Legend,
-    Filler  // Registre o plugin Filler
+    Legend
 )
 
 export default {
     name: 'FluxoCaixaChart',
     components: {
-        Line
+        Bar
     },
     setup() {
         const store = useStore()
+        const chartReady = ref(false)
 
         const chartData = ref({
-            labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho'],
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
             datasets: [
                 {
                     label: 'Receitas',
-                    data: [],
+                    data: [0, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(76, 175, 80, 0.8)',
                     borderColor: '#4CAF50',
-                    backgroundColor: 'rgba(76, 175, 80, 0.2)',
-                    fill: true,
-                    tension: 0.4
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
                 },
                 {
                     label: 'Despesas',
-                    data: [],
+                    data: [0, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(244, 67, 54, 0.8)',
                     borderColor: '#F44336',
-                    backgroundColor: 'rgba(244, 67, 54, 0.2)',
-                    fill: true,
-                    tension: 0.4
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
                 }
             ]
         })
@@ -69,19 +70,28 @@ export default {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        usePointStyle: true
+                        usePointStyle: true,
+                        padding: 20,
+                        font: {
+                            size: 12
+                        }
                     }
                 },
                 tooltip: {
                     callbacks: {
                         label: (context) => {
-                            const value = context.raw;
-                            return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                            const value = context.raw || 0;
+                            return `${context.dataset.label}: R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
                         }
                     }
                 }
             },
             scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
                 y: {
                     beginAtZero: true,
                     ticks: {
@@ -93,26 +103,72 @@ export default {
             }
         })
 
-        onMounted(async () => {
-            await store.dispatch('fetchResumoDashboard')
-            atualizarGrafico()
-        })
+        const mesesAbreviados = {
+            'January': 'Jan',
+            'February': 'Fev',
+            'March': 'Mar',
+            'April': 'Abr',
+            'May': 'Mai',
+            'June': 'Jun',
+            'July': 'Jul',
+            'August': 'Ago',
+            'September': 'Set',
+            'October': 'Out',
+            'November': 'Nov',
+            'December': 'Dez'
+        }
 
         const atualizarGrafico = () => {
-            if (store.state.resumoDashboard?.fluxoCaixa) {
-                const { receitas, despesas } = store.state.resumoDashboard.fluxoCaixa
-                chartData.value.datasets[0].data = receitas || []
-                chartData.value.datasets[1].data = despesas || []
+            console.log('Atualizando gráfico...')
+            console.log('Estado do dashboard:', store.state.resumoDashboard)
+
+            const fluxoCaixa = store.state.resumoDashboard?.fluxoCaixa
+            console.log('Dados do fluxo de caixa:', fluxoCaixa)
+
+            if (fluxoCaixa) {
+                const labels = fluxoCaixa.labels.map(mes =>
+                    mesesAbreviados[mes] || mes.substring(0, 3)
+                )
+                console.log('Labels processados:', labels)
+                console.log('Receitas:', fluxoCaixa.receitas)
+                console.log('Despesas:', fluxoCaixa.despesas)
+
+                chartData.value = {
+                    labels,
+                    datasets: [
+                        {
+                            ...chartData.value.datasets[0],
+                            data: fluxoCaixa.receitas || []
+                        },
+                        {
+                            ...chartData.value.datasets[1],
+                            data: fluxoCaixa.despesas || []
+                        }
+                    ]
+                }
+                chartReady.value = true
             }
         }
 
-        watch(() => store.state.resumoDashboard, () => {
+        onMounted(async () => {
+            console.log('Componente montado')
+            try {
+                await store.dispatch('fetchResumoDashboard')
+                atualizarGrafico()
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error)
+            }
+        })
+
+        watch(() => store.state.resumoDashboard, (newVal) => {
+            console.log('Dashboard atualizado:', newVal)
             atualizarGrafico()
         }, { deep: true })
 
         return {
             chartData,
-            chartOptions
+            chartOptions,
+            chartReady
         }
     }
 }
@@ -123,5 +179,6 @@ export default {
     height: 300px;
     width: 100%;
     position: relative;
+    padding: 10px;
 }
 </style>

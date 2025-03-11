@@ -3,7 +3,9 @@ from flask import Blueprint, jsonify, request
 from app.models import Receita, Despesa, CategoriaReceita, CategoriaDespesa
 from app import db
 from datetime import datetime
-from sqlalchemy import extract
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from sqlalchemy import extract, func
 
 api = Blueprint('api', __name__)
 
@@ -125,36 +127,63 @@ def criar_categoria_receita():
 @api.route('/api/dashboard/resumo', methods=['GET'])
 def get_resumo():
     try:
-        # Total de receitas
-        total_receitas = db.session.query(db.func.sum(Receita.valor)).scalar() or 0
+        # Obtém a data atual
+        data_atual = datetime.now()
         
-        # Total de despesas
-        total_despesas = db.session.query(db.func.sum(Despesa.valor)).scalar() or 0
+        # Cria uma lista com os últimos 6 meses
+        meses = []
+        receitas_mensais = []
+        despesas_mensais = []
         
-        # Saldo
+        for i in range(5, -1, -1):
+            data_mes = data_atual - relativedelta(months=i)
+            primeiro_dia = data_mes.replace(day=1)
+            if i > 0:
+                ultimo_dia = (data_mes.replace(day=1) + relativedelta(months=1) - relativedelta(days=1))
+            else:
+                ultimo_dia = data_atual
+            
+            # Adiciona o nome do mês em inglês (será traduzido no frontend)
+            meses.append(data_mes.strftime('%B'))
+            
+            # Calcula receitas do mês
+            receitas_mes = db.session.query(func.coalesce(func.sum(Receita.valor), 0))\
+                .filter(Receita.data.between(primeiro_dia, ultimo_dia))\
+                .scalar()
+            
+            # Calcula despesas do mês
+            despesas_mes = db.session.query(func.coalesce(func.sum(Despesa.valor), 0))\
+                .filter(Despesa.data.between(primeiro_dia, ultimo_dia))\
+                .scalar()
+            
+            receitas_mensais.append(float(receitas_mes))
+            despesas_mensais.append(float(despesas_mes))
+
+        # Calcula totais gerais
+        total_receitas = sum(receitas_mensais)
+        total_despesas = sum(despesas_mensais)
         saldo = total_receitas - total_despesas
         
-        # Receitas por categoria
-        receitas_categoria = db.session.query(
-            Receita.categoria,
-            db.func.sum(Receita.valor)
-        ).group_by(Receita.categoria).all()
-        
-        # Despesas por categoria
+        # Calcula distribuição por categoria
         despesas_categoria = db.session.query(
             Despesa.categoria,
-            db.func.sum(Despesa.valor)
+            func.sum(Despesa.valor)
         ).group_by(Despesa.categoria).all()
         
         return jsonify({
             'saldo': saldo,
             'total_receitas': total_receitas,
             'total_despesas': total_despesas,
-            'receitas_categoria': dict(receitas_categoria),
-            'despesas_categoria': dict(despesas_categoria)
+            'despesas_categoria': dict(despesas_categoria),
+            'fluxoCaixa': {
+                'labels': meses,
+                'receitas': receitas_mensais,
+                'despesas': despesas_mensais
+            }
         })
     except Exception as e:
-        return jsonify({'error': str(e)}), 400
+        print(f"Erro no resumo: {str(e)}")  # Log do erro
+        return jsonify({'error': str(e)}), 500
 
 # Rota para relatórios mensais
 @api.route('/api/relatorios/mensal/<int:ano>/<int:mes>', methods=['GET'])
@@ -273,3 +302,6 @@ def deletar_transacao(tipo, id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
+    
+    
+    
