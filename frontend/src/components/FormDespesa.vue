@@ -142,10 +142,21 @@ export default {
                 }
 
                 await store.dispatch('adicionarDespesa', despesaData)
-                emit('save')
+                // Limpa o formulário
+                Object.keys(form).forEach(key => {
+                    if (key === 'data') {
+                        form[key] = new Date()
+                    } else if (typeof form[key] === 'boolean') {
+                        form[key] = false
+                    } else {
+                        form[key] = null
+                    }
+                })
+                // Emite o evento de sucesso
+                emit('save', true)
             } catch (error) {
                 console.error('Erro ao salvar despesa:', error)
-                // Aqui você pode adicionar uma notificação de erro
+                emit('save', false)
             } finally {
                 loading.value = false
             }

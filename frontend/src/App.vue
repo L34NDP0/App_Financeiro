@@ -33,12 +33,14 @@
       </main>
 
       <!-- Modais -->
-      <Dialog v-model:visible="receitaModal" header="Nova Receita">
-        <FormReceita @save="salvarReceita" @cancel="receitaModal = false" />
+      <Dialog v-model:visible="receitaModal" header="Nova Receita" :modal="true" :closable="true" :closeOnEscape="true"
+        :dismissableMask="true">
+        <FormReceita @save="handleSaveReceita" @cancel="closeReceitaModal" />
       </Dialog>
 
-      <Dialog v-model:visible="despesaModal" header="Nova Despesa">
-        <FormDespesa @save="salvarDespesa" @cancel="despesaModal = false" />
+      <Dialog v-model:visible="despesaModal" header="Nova Despesa" :modal="true" :closable="true" :closeOnEscape="true"
+        :dismissableMask="true">
+        <FormDespesa @save="handleSaveDespesa" @cancel="closeDespesaModal" />
       </Dialog>
     </div>
   </div>
@@ -47,6 +49,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from 'vuex'
+import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import FormReceita from './components/FormReceita.vue'
@@ -62,6 +65,7 @@ export default {
   },
   setup() {
     const store = useStore()
+    const toast = useToast()
     const receitaModal = ref(false)
     const despesaModal = ref(false)
 
@@ -73,21 +77,49 @@ export default {
       despesaModal.value = true
     }
 
-    const salvarReceita = async (receita) => {
-      try {
-        await store.dispatch('adicionarReceita', receita)
-        receitaModal.value = false
-      } catch (error) {
-        // Tratar erro
+    const closeReceitaModal = () => {
+      receitaModal.value = false
+    }
+
+    const closeDespesaModal = () => {
+      despesaModal.value = false
+    }
+
+    const handleSaveReceita = async (success) => {
+      if (success) {
+        closeReceitaModal()
+        toast.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Receita adicionada com sucesso!',
+          life: 3000
+        })
+      } else {
+        toast.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Erro ao adicionar receita',
+          life: 3000
+        })
       }
     }
 
-    const salvarDespesa = async (despesa) => {
-      try {
-        await store.dispatch('adicionarDespesa', despesa)
-        despesaModal.value = false
-      } catch (error) {
-        // Tratar erro
+    const handleSaveDespesa = async (success) => {
+      if (success) {
+        closeDespesaModal()
+        toast.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Despesa adicionada com sucesso!',
+          life: 3000
+        })
+      } else {
+        toast.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Erro ao adicionar despesa',
+          life: 3000
+        })
       }
     }
 
@@ -96,8 +128,10 @@ export default {
       despesaModal,
       showAddReceita,
       showAddDespesa,
-      salvarReceita,
-      salvarDespesa
+      closeReceitaModal,
+      closeDespesaModal,
+      handleSaveReceita,
+      handleSaveDespesa
     }
   }
 }
@@ -161,6 +195,20 @@ export default {
   margin-left: 0.5rem;
 }
 
+/* Estilos para o modal */
+:deep(.p-dialog) {
+  max-width: 90vw;
+  width: 500px;
+}
+
+:deep(.p-dialog-header) {
+  padding: 1.5rem;
+}
+
+:deep(.p-dialog-content) {
+  padding: 0;
+}
+
 @media (max-width: 768px) {
   .app-container {
     flex-direction: column;
@@ -183,6 +231,10 @@ export default {
 
   .main-content {
     padding: 10px;
+  }
+
+  :deep(.p-dialog) {
+    width: 95vw;
   }
 }
 
