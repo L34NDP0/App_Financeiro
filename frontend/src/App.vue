@@ -19,11 +19,11 @@
           </router-link>
         </div>
         <div class="actions">
-          <Button @click="showAddReceita" class="p-button-success" icon="pi pi-plus">
-            Receita
+          <Button type="button" @click="showAddReceita" class="p-button-success action-button" icon="pi pi-plus">
+            <span class="button-text">Receita</span>
           </Button>
-          <Button @click="showAddDespesa" class="p-button-danger" icon="pi pi-minus">
-            Despesa
+          <Button type="button" @click="showAddDespesa" class="p-button-danger action-button" icon="pi pi-minus">
+            <span class="button-text">Despesa</span>
           </Button>
         </div>
       </nav>
@@ -147,11 +147,56 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-bottom: 50px;
+  padding: 0 10px;
 }
 
-.main-content {
-  flex-grow: 1;
-  padding: 20px;
-  background-color: #fff;
+.action-button {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0.75rem 1rem;
+}
+
+.action-button .button-text {
+  margin-left: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .actions {
+    flex-direction: row;
+    margin-bottom: 20px;
+  }
+
+  .action-button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .main-content {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .actions {
+    flex-direction: column;
+  }
+
+  .action-button {
+    width: 100%;
+  }
+
+  .button-text {
+    display: inline-block;
+  }
 }
 </style>

@@ -1,8 +1,11 @@
 // frontend/vue.config.js
 const { defineConfig } = require('@vue/cli-service')
 
-module.exports = defineConfig({
-  transpileDependencies: true,
-  lintOnSave: false,
 
-})
+module.exports = {
+  runtimeCompiler: true,
+  lintOnSave: false,
+  transpileDependencies: [],
+  devServer: { devMiddleware: { writeToDisk: true } }
+};
+

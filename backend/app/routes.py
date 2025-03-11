@@ -194,3 +194,82 @@ def relatorio_mensal(ano, mes):
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+    
+    
+    # Adicione estas novas rotas após as rotas existentes
+
+@api.route('/api/transacoes', methods=['GET'])
+def listar_transacoes():
+    try:
+        # Obter parâmetros de filtro
+        tipo = request.args.get('tipo')
+        categoria = request.args.get('categoria')
+        data_inicio = request.args.get('data_inicio')
+        data_fim = request.args.get('data_fim')
+        
+        # Iniciar queries
+        receitas_query = Receita.query
+        despesas_query = Despesa.query
+        
+        # Aplicar filtros
+        if categoria and categoria != 'Todas':
+            receitas_query = receitas_query.filter(Receita.categoria == categoria)
+            despesas_query = despesas_query.filter(Despesa.categoria == categoria)
+            
+        if data_inicio and data_fim:
+            data_inicio = datetime.strptime(data_inicio, '%Y-%m-%d').date()
+            data_fim = datetime.strptime(data_fim, '%Y-%m-%d').date()
+            receitas_query = receitas_query.filter(Receita.data.between(data_inicio, data_fim))
+            despesas_query = despesas_query.filter(Despesa.data.between(data_inicio, data_fim))
+        
+        # Executar queries baseado no tipo
+        transacoes = []
+        if tipo is None or tipo == 'receita':
+            receitas = receitas_query.all()
+            transacoes.extend([{
+                'id': r.id,
+                'tipo': 'receita',
+                'valor': r.valor,
+                'descricao': r.descricao,
+                'data': r.data.strftime('%Y-%m-%d'),
+                'categoria': r.categoria,
+                'status': 'Recebido' if r.recebido else 'Pendente',
+                'fixo': r.fixo
+            } for r in receitas])
+            
+        if tipo is None or tipo == 'despesa':
+            despesas = despesas_query.all()
+            transacoes.extend([{
+                'id': d.id,
+                'tipo': 'despesa',
+                'valor': d.valor,
+                'descricao': d.descricao,
+                'data': d.data.strftime('%Y-%m-%d'),
+                'categoria': d.categoria,
+                'status': 'Pago' if d.pago else 'Pendente',
+                'fixo': d.fixo
+            } for d in despesas])
+        
+        # Ordenar por data
+        transacoes.sort(key=lambda x: x['data'], reverse=True)
+        
+        return jsonify(transacoes)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@api.route('/api/transacoes/<string:tipo>/<int:id>', methods=['DELETE'])
+def deletar_transacao(tipo, id):
+    try:
+        if tipo == 'receita':
+            transacao = Receita.query.get_or_404(id)
+        elif tipo == 'despesa':
+            transacao = Despesa.query.get_or_404(id)
+        else:
+            return jsonify({'error': 'Tipo inválido'}), 400
+        
+        db.session.delete(transacao)
+        db.session.commit()
+        return jsonify({'message': 'Transação excluída com sucesso'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400

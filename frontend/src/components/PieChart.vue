@@ -1,13 +1,33 @@
-// frontend/src/components/PieChart.vue
 <template>
     <div class="chart-container">
-        <Chart type="pie" :data="chartData" :options="chartOptions" />
+        <Pie :data="chartData" :options="chartOptions" />
     </div>
 </template>
 
 <script>
+import { ref, watch } from 'vue'
+import {
+    Chart as ChartJS,
+    ArcElement,
+    Tooltip,
+    Legend,
+    Colors
+} from 'chart.js'
+import { Pie } from 'vue-chartjs'
+
+// Registre todos os plugins necessários
+ChartJS.register(
+    ArcElement,
+    Tooltip,
+    Legend,
+    Colors
+)
+
 export default {
     name: 'PieChart',
+    components: {
+        Pie
+    },
     props: {
         data: {
             type: Array,
@@ -15,32 +35,58 @@ export default {
         }
     },
     setup(props) {
-        const chartData = {
-            labels: props.data.map(item => item.categoria),
-            datasets: [
-                {
-                    data: props.data.map(item => item.valor),
-                    backgroundColor: [
-                        '#FF6384',
-                        '#36A2EB',
-                        '#FFCE56',
-                        '#4BC0C0',
-                        '#9966FF',
-                        '#FF9F40'
-                    ]
-                }
-            ]
-        }
+        const chartData = ref({
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF',
+                    '#FF9F40',
+                    '#808080'
+                ],
+                hoverBackgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF',
+                    '#FF9F40',
+                    '#808080'
+                ]
+            }]
+        })
 
-        const chartOptions = {
+        const chartOptions = ref({
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => {
+                            const value = context.raw;
+                            return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                        }
+                    }
                 }
             }
-        }
+        })
+
+        watch(() => props.data, (newData) => {
+            if (newData && newData.length > 0) {
+                chartData.value.labels = newData.map(item => item.categoria)
+                chartData.value.datasets[0].data = newData.map(item => item.valor)
+            }
+        }, { immediate: true })
 
         return {
             chartData,
@@ -54,5 +100,6 @@ export default {
 .chart-container {
     height: 300px;
     width: 100%;
+    position: relative;
 }
 </style>
