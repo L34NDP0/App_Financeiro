@@ -6,6 +6,7 @@
     <div class="app-container">
       <nav class="sidebar">
         <div class="logo">
+          <img src="@/assets/logo.png" width="100" height="90" />
           <h1>MyFinance</h1>
         </div>
         <div class="menu">
