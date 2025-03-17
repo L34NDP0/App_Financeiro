@@ -19,7 +19,7 @@ export default createStore({
     actions: {
         async fetchResumoDashboard({ commit }) {
             try {
-                const response = await axios.get(`${API_URL}/dashboard/resumo`)
+                const response = await axios.get(`${API_URL}/api/dashboard/resumo`)
                 commit('SET_RESUMO_DASHBOARD', response.data)
             } catch (error) {
                 console.error('Erro ao buscar resumo:', error)
@@ -44,7 +44,7 @@ export default createStore({
                     params.data_fim = filtros.periodo[1].toISOString().split('T')[0]
                 }
 
-                const response = await axios.get(`${API_URL}/transacoes`, { params })
+                const response = await axios.get(`${API_URL}/api/transacoes`, { params })
                 commit('SET_TRANSACOES', response.data)
                 return response.data
             } catch (error) {
@@ -55,7 +55,7 @@ export default createStore({
 
         async excluirTransacao({ dispatch }, transacao) {
             try {
-                await axios.delete(`${API_URL}/transacoes/${transacao.tipo}/${transacao.id}`)
+                await axios.delete(`${API_URL}/api/transacoes/${transacao.tipo}/${transacao.id}`)
                 await dispatch('buscarTransacoes', {})
                 await dispatch('fetchResumoDashboard')
             } catch (error) {
@@ -66,7 +66,7 @@ export default createStore({
 
         async adicionarReceita({ dispatch }, receita) {
             try {
-                await axios.post(`${API_URL}/receitas`, receita)
+                await axios.post(`${API_URL}/api/receitas`, receita)
                 await dispatch('fetchResumoDashboard')
             } catch (error) {
                 console.error('Erro ao adicionar receita:', error)
@@ -76,7 +76,7 @@ export default createStore({
 
         async adicionarDespesa({ dispatch }, despesa) {
             try {
-                await axios.post(`${API_URL}/despesas`, despesa)
+                await axios.post(`${API_URL}/api/despesas`, despesa)
                 await dispatch('fetchResumoDashboard')
             } catch (error) {
                 console.error('Erro ao adicionar despesa:', error)
