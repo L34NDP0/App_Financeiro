@@ -1,7 +1,8 @@
 import { createStore } from 'vuex'
 import axios from 'axios'
 
-const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:8051/api'
+
+const API_URL = process.env.VUE_APP_API_URL || 'https://app-financeiro-2q7m.onrender.com'
 export default createStore({
     state: {
         resumoDashboard: null,
