@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: myfinance-frontend
+    env: static
+    buildCommand: npm run install-and-build
+    staticPublishPath: ./dist
+    envVars:
+      - key: NODE_VERSION
+        value: 16
+      - key: NODE_ENV
+        value: production
