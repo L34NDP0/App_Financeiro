@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "install-and-build": "npm install --include=dev && node --max_old_space_size=8240 npm run build",
+    "install-and-build": "npm install --include=dev && npm run build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
