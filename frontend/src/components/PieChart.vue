@@ -12,8 +12,7 @@ import {
     Chart as ChartJS,
     ArcElement,
     Tooltip,
-    Legend,
-    Colors
+    Legend
 } from 'chart.js'
 import { Pie } from 'vue-chartjs'
 
@@ -21,8 +20,7 @@ import { Pie } from 'vue-chartjs'
 ChartJS.register(
     ArcElement,
     Tooltip,
-    Legend,
-    Colors
+    Legend
 )
 
 export default {
@@ -72,10 +70,16 @@ export default {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        usePointStyle: true
+                        usePointStyle: true,
+                        color: '#495057' // Cor do texto da legenda
                     }
                 },
                 tooltip: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    titleColor: '#495057',
+                    bodyColor: '#495057',
+                    borderColor: '#dee2e6',
+                    borderWidth: 1,
                     callbacks: {
                         label: (context) => {
                             const value = context.raw;
@@ -130,5 +134,10 @@ export default {
     height: 300px;
     width: 100%;
     position: relative;
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>
