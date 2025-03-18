@@ -6,7 +6,6 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "install-and-build": "npm install --legacy-peer-deps && npm run build"
   },
   "dependencies": {
     "add": "^2.0.6",
