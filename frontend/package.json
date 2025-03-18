@@ -6,12 +6,12 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "install-and-build": "npm install && npm run build"
+    "install-and-build": "npm install --legacy-peer-deps && npm run build"
   },
   "dependencies": {
     "add": "^2.0.6",
     "axios": "^1.8.1",
-    "chart.js": "^4.3.0",
+    "chart.js": "^3.9.1",
     "core-js": "^3.8.3",
     "global": "^4.4.0",
     "primeicons": "^6.0.1",
