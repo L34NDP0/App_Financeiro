@@ -2,8 +2,9 @@ import { createStore } from 'vuex'
 import axios from 'axios'
 
 // Configuração da porta e base URL
-const port = process.env.PORT || 8080
-const API_URL = process.env.VUE_APP_API_URL || `https://app-financeiro-2q7m.onrender.com:${port}`
+//const port = process.env.PORT || 8080
+//const API_URL = process.env.VUE_APP_API_URL || `https://app-financeiro-2q7m.onrender.com:${port}`
+const API_URL = process.env.VUE_APP_API_URL || `localhost:10000`
 
 // Configuração global do Axios
 axios.defaults.baseURL = API_URL
@@ -26,7 +27,7 @@ export default createStore({
     actions: {
         async fetchResumoDashboard({ commit }) {
             try {
-                const response = await axios.get('/api/dashboard/resumo') // Removida a concatenação com API_URL
+                const response = await axios.get('/dashboard/resumo') // Removida a concatenação com API_URL
                 commit('SET_RESUMO_DASHBOARD', response.data)
             } catch (error) {
                 console.error('Erro ao buscar resumo:', error)
@@ -51,7 +52,7 @@ export default createStore({
                     params.data_fim = filtros.periodo[1].toISOString().split('T')[0]
                 }
 
-                const response = await axios.get('/api/transacoes', { params }) // Removida a concatenação com API_URL
+                const response = await axios.get('/transacoes', { params }) // Removida a concatenação com API_URL
                 commit('SET_TRANSACOES', response.data)
                 return response.data
             } catch (error) {
@@ -62,7 +63,7 @@ export default createStore({
 
         async excluirTransacao({ dispatch }, transacao) {
             try {
-                await axios.delete(`/api/transacoes/${transacao.tipo}/${transacao.id}`) // Removida a concatenação com API_URL
+                await axios.delete(`/transacoes/${transacao.tipo}/${transacao.id}`) // Removida a concatenação com API_URL
                 await dispatch('buscarTransacoes', {})
                 await dispatch('fetchResumoDashboard')
             } catch (error) {
@@ -73,7 +74,7 @@ export default createStore({
 
         async adicionarReceita({ dispatch }, receita) {
             try {
-                await axios.post('/api/receitas', receita) // Removida a concatenação com API_URL
+                await axios.post('/receitas', receita) // Removida a concatenação com API_URL
                 await dispatch('fetchResumoDashboard')
             } catch (error) {
                 console.error('Erro ao adicionar receita:', error)
@@ -83,7 +84,7 @@ export default createStore({
 
         async adicionarDespesa({ dispatch }, despesa) {
             try {
-                await axios.post('/api/despesas', despesa) // Removida a concatenação com API_URL
+                await axios.post('/despesas', despesa) // Removida a concatenação com API_URL
                 await dispatch('fetchResumoDashboard')
             } catch (error) {
                 console.error('Erro ao adicionar despesa:', error)

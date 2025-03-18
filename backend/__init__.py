@@ -12,7 +12,7 @@ def create_app():
     CORS(app)
     db.init_app(app)
     
-    from app.routes import api
+    from backend.routes import api
     app.register_blueprint(api)
     
     return app

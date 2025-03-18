@@ -1,5 +1,8 @@
-from app import db
+from flask_sqlalchemy import SQLAlchemy
+import re
 from datetime import datetime
+
+db = SQLAlchemy()
 
 class Receita(db.Model):
     id = db.Column(db.Integer, primary_key=True)
