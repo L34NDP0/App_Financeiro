@@ -20,11 +20,11 @@
           </router-link>
         </div>
         <div class="actions">
-          <Button type="button" @click="showAddReceita" class="p-button-success action-button" icon="pi pi-plus">
-            <span class="button-text">Receita</span>
+          <Button type="button" @click="showAddReceita" class="p-button-success action-button">
+            <span class="button-text">Receitas</span>
           </Button>
-          <Button type="button" @click="showAddDespesa" class="p-button-danger action-button" icon="pi pi-minus">
-            <span class="button-text">Despesa</span>
+          <Button type="button" @click="showAddDespesa" class="p-button-danger action-button">
+            <span class="button-text">Despesas</span>
           </Button>
         </div>
       </nav>
@@ -194,6 +194,7 @@ export default {
 
 .action-button .button-text {
   margin-left: 0.5rem;
+  text-align: center;
 }
 
 /* Estilos para o modal */
