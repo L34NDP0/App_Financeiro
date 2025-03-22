@@ -1,6 +1,9 @@
-<!-- frontend/src/views/Dashboard.vue -->
 <template>
-    <div class="dashboard">
+    <div class="dashboard-view">
+        <div class="header">
+            <h2>Dashboard</h2>
+        </div>
+
         <div class="cards">
             <div class="card saldo">
                 <h3>Saldo</h3>
@@ -17,11 +20,11 @@
         </div>
 
         <div class="charts">
-            <div class="chart-container">
+            <div class="chart-container fluxo">
                 <h3>Fluxo de Caixa</h3>
                 <FluxoCaixaChart />
             </div>
-            <div class="chart-container">
+            <div class="chart-container distribuicao">
                 <h3>Distribuição de Despesas</h3>
                 <PieChart :data="despesasPorCategoria" />
             </div>
@@ -74,8 +77,15 @@ export default {
 </script>
 
 <style scoped>
-.dashboard {
+.dashboard-view {
     padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .cards {
@@ -89,6 +99,17 @@ export default {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.card h2 {
+    margin: 10px 0 0 0;
+    font-size: 1.5rem;
 }
 
 .card.saldo {
@@ -117,5 +138,76 @@ export default {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+/* Responsividade para tablets */
+@media (max-width: 768px) {
+    .dashboard-view {
+        padding: 15px;
+    }
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .charts {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+        padding: 15px;
+    }
+
+    .card h2 {
+        font-size: 1.3rem;
+    }
+}
+
+/* Responsividade para smartphones */
+@media (max-width: 480px) {
+    .dashboard-view {
+        padding: 10px;
+    }
+
+    .header {
+        margin-bottom: 15px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .card h3 {
+        font-size: 0.9rem;
+    }
+
+    .card h2 {
+        font-size: 1.2rem;
+    }
+
+    .charts {
+        gap: 15px;
+    }
+
+    .chart-container {
+        padding: 10px;
+    }
+
+    .chart-container h3 {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
 }
 </style>

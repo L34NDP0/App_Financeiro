@@ -5,10 +5,7 @@
     <ConfirmDialog />
     <div class="app-container">
       <nav class="sidebar">
-        <div class="logo">
-          <img src="@/assets/logo.png" width="100" height="90" />
-          <h1>MyFinance</h1>
-        </div>
+
         <div class="menu">
           <router-link to="/" class="menu-item">
             <i class="pi pi-home"></i>
@@ -186,16 +183,6 @@ export default {
   padding: 0 10px;
 }
 
-.action-button {
-  width: 100%;
-  justify-content: flex-start;
-  padding: 0.75rem 1rem;
-}
-
-.action-button .button-text {
-  margin-left: 0.5rem;
-  text-align: center;
-}
 
 /* Estilos para o modal */
 :deep(.p-dialog) {
@@ -226,10 +213,6 @@ export default {
     margin-bottom: 20px;
   }
 
-  .action-button {
-    flex: 1;
-    justify-content: center;
-  }
 
   .main-content {
     padding: 10px;
@@ -245,12 +228,5 @@ export default {
     flex-direction: column;
   }
 
-  .action-button {
-    width: 100%;
-  }
-
-  .button-text {
-    display: inline-block;
-  }
 }
 </style>

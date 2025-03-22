@@ -175,45 +175,65 @@ export default {
 
 <style scoped>
 .form-container {
-    padding: 20px;
+    padding: 1rem;
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    font-weight: 500;
 }
 
+/* Inputs responsivos */
 .form-group :deep(.p-inputtext),
 .form-group :deep(.p-dropdown),
-.form-group :deep(.p-calendar) {
+.form-group :deep(.p-calendar),
+.form-group :deep(.p-inputnumber) {
     width: 100%;
 }
 
+/* Ajustes para dropdown e calendar em mobile */
+:deep(.p-dropdown-panel),
+:deep(.p-datepicker) {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: calc(100vw - 2rem) !important;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Checkboxes responsivos */
 .switches {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-.switch-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
+/* Botões responsivos */
 .form-actions {
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
-    margin-top: 2rem;
+    margin-top: 1rem;
 }
 
-.p-error {
-    color: #ef4444;
-    font-size: 0.875rem;
+/* Media query para mobile */
+@media (max-width: 480px) {
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+
+    .switches {
+        flex-direction: column;
+    }
 }
 </style>
