@@ -26,6 +26,8 @@
                 </div>
                 <Button icon="pi pi-search" @click="buscarTransacoes" />
                 <Button icon="pi pi-filter-slash" class="p-button-outlined" @click="limparFiltros" />
+                <Button icon="pi pi-file-excel" class="p-button-success" @click="exportarExcel"
+                    :disabled="!transacoes.length" tooltip="Exportar para Excel" />
             </div>
         </div>
 
@@ -82,6 +84,7 @@ import Dropdown from 'primevue/dropdown'
 import Tag from 'primevue/tag'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
+import * as XLSX from 'xlsx'
 
 export default {
     name: 'ExtratosView',
@@ -205,6 +208,54 @@ export default {
             }
         }
 
+        const exportarExcel = () => {
+            try {
+                const dadosExportacao = transacoes.value.map(t => ({
+                    'Data': formatarData(t.data),
+                    'Descrição': t.descricao,
+                    'Categoria': t.categoria,
+                    'Tipo': t.tipo.charAt(0).toUpperCase() + t.tipo.slice(1),
+                    'Valor': formatarMoeda(t.valor).replace('R$', '').trim(),
+                    'Status': t.tipo === 'receita' ?
+                        (t.recebido ? 'Recebido' : 'Recebido') :
+                        (t.pago ? 'Pago' : 'Pago')
+                }))
+
+                const ws = XLSX.utils.json_to_sheet(dadosExportacao)
+
+                const wscols = [
+                    { wch: 12 }, // Data
+                    { wch: 30 }, // Descrição
+                    { wch: 15 }, // Categoria
+                    { wch: 10 }, // Tipo
+                    { wch: 15 }, // Valor
+                    { wch: 12 }  // Status
+                ]
+                ws['!cols'] = wscols
+
+                const wb = XLSX.utils.book_new()
+                XLSX.utils.book_append_sheet(wb, ws, 'Extratos')
+
+                const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')
+                XLSX.writeFile(wb, `extratos-${dataAtual}.xlsx`)
+
+                toast.add({
+                    severity: 'success',
+                    summary: 'Sucesso',
+                    detail: 'Arquivo exportado com sucesso!',
+                    life: 3000
+                })
+            } catch (error) {
+                console.error('Erro ao exportar:', error)
+                toast.add({
+                    severity: 'error',
+                    summary: 'Erro',
+                    detail: 'Erro ao exportar o arquivo',
+                    life: 3000
+                })
+            }
+        }
+
         onMounted(() => {
             buscarTransacoes()
         })
@@ -221,7 +272,8 @@ export default {
             buscarTransacoes,
             limparFiltros,
             editarTransacao,
-            confirmarExclusao
+            confirmarExclusao,
+            exportarExcel // Adicione exportarExcel ao objeto de retorno
         }
     }
 }
@@ -264,20 +316,39 @@ export default {
     font-weight: 600;
 }
 
-@media (max-width: 768px) {
-    .header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1rem;
-    }
+:deep(.p-button.p-button-success) {
+    margin-left: 0.5rem;
+}
 
+/* Ajuste para responsividade */
+@media (max-width: 768px) {
     .filters {
         flex-direction: column;
         gap: 1rem;
     }
 
-    .filter-group {
-        min-width: 100%;
+    :deep(.p-button.p-button-success) {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        width: 100%;
     }
+
+    @media (max-width: 768px) {
+        .header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+
+        .filters {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .filter-group {
+            min-width: 100%;
+        }
+    }
+
 }
 </style>
