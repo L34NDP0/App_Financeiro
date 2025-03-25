@@ -11,7 +11,11 @@
         <div class="form-group">
             <label for="valor">Valor</label>
             <InputNumber id="valor" v-model="form.valor" :class="{ 'p-invalid': errors.valor }" mode="currency"
-                currency="BRL" locale="pt-BR" />
+                currency="BRL" locale="pt-BR" :pt="{
+                    input: {
+                        inputmode: 'decimal'
+                    }
+                }" />
             <small class="p-error" v-if="errors.valor">{{ errors.valor }}</small>
         </div>
 
@@ -95,10 +99,11 @@ export default {
         const categorias = ref([
             { nome: 'Alimentação' },
             { nome: 'Moradia' },
+            { nome: 'Lazer' },
+            { nome: 'Investimentos' },
+            { nome: 'Educação' },
             { nome: 'Transporte' },
             { nome: 'Saúde' },
-            { nome: 'Educação' },
-            { nome: 'Lazer' },
             { nome: 'Outros' }
         ])
 
