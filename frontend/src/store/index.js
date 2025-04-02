@@ -2,8 +2,8 @@ import { createStore } from 'vuex'
 import axios from 'axios'
 
 // Configuração da porta e base URL
-const API_URL = process.env.VUE_APP_API_URL || `https://app-financeiro-2q7m.onrender.com:${port}`
-//const API_URL = process.env.VUE_APP_API_URL || `localhost:10000`
+//const API_URL = process.env.VUE_APP_API_URL || `https://app-financeiro-2q7m.onrender.com:${port}`
+const API_URL = process.env.VUE_APP_API_URL || `localhost:10000`
 
 // Configuração global do Axios
 axios.defaults.baseURL = API_URL
