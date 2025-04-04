@@ -35,7 +35,6 @@
             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
             :rowsPerPageOptions="[10, 20, 50]" responsiveLayout="scroll"
             currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}">
-
             <Column field="data" header="Data" :sortable="true">
                 <template #body="slotProps">
                     {{ formatarData(slotProps.data.data) }}
@@ -44,7 +43,7 @@
 
             <Column field="descricao" header="Descrição" :sortable="true" />
 
-            <Column field="categoria" header="Categoria" :sortable="true" />
+            <Column field="categoria" headerformatarData="Categoria" :sortable="true" />
 
             <Column field="valor" header="Valor" :sortable="true">
                 <template #body="slotProps">
@@ -129,10 +128,10 @@ export default {
             { nome: 'Outros' }
         ])
 
-        const formatarData = (data) => {
-            return new Date(data).toLocaleDateString('pt-BR')
+        const formatarData = (dataString) => {
+            if (!dataString) return ''
+            return dataString.split('T')[0].split('-').reverse().join('/')
         }
-
         const formatarMoeda = (valor) => {
             return valor.toLocaleString('pt-BR', {
                 style: 'currency',

@@ -11,9 +11,10 @@
         <div class="form-group">
             <label for="valor">Valor</label>
             <InputNumber id="valor" v-model="form.valor" :class="{ 'p-invalid': errors.valor }" mode="currency"
-                currency="BRL" locale="pt-BR" :pt="{
+                currency="BRL" locale="pt-BR" :minFractionDigits="2" :maxFractionDigits="2" :step="0.01" :pt="{
                     input: {
-                        inputmode: 'decimal'
+                        inputmode: 'decimal',
+                        autocomplete: 'off'
                     }
                 }" />
             <small class="p-error" v-if="errors.valor">{{ errors.valor }}</small>
